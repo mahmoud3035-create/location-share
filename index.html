@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>You’ll win 100,000</title>
+    <title>Share Your Location</title>
 
     <style>
         * {
@@ -42,15 +42,13 @@
             margin-bottom: 20px;
         }
 
-        /* مربع الصورة */
-
         .video-preview {
             position: relative;
 
             width: 100%;
             aspect-ratio: 16 / 9;
 
-            background-image: url("image.png");
+            background-image: url("./image.png");
             background-size: cover;
             background-position: center;
 
@@ -64,8 +62,6 @@
             cursor: pointer;
         }
 
-        /* طبقة خفيفة فوق الصورة */
-
         .video-preview::before {
             content: "";
             position: absolute;
@@ -73,8 +69,6 @@
 
             background: rgba(0, 0, 0, 0.20);
         }
-
-        /* زر التشغيل */
 
         .play-button {
             position: relative;
@@ -93,10 +87,9 @@
             justify-content: center;
 
             font-size: 36px;
-
             padding-left: 5px;
 
-            transition: 0.2s;
+            transition: transform 0.2s;
         }
 
         .video-preview:hover .play-button {
@@ -113,13 +106,10 @@
             right: 0;
 
             color: white;
-
             font-size: 16px;
 
             text-shadow: 0 1px 4px #000;
         }
-
-        /* رسالة توضيحية */
 
         .notice {
             margin-top: 18px;
@@ -133,17 +123,12 @@
             color: #ddd;
 
             line-height: 1.7;
-
             font-size: 14px;
         }
 
-        /* النتيجة */
-
         #result {
             margin-top: 20px;
-
             min-height: 30px;
-
             line-height: 2;
         }
 
@@ -160,31 +145,36 @@
         .loading {
             color: #ddd;
         }
+
+        .location-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #4da3ff;
+            text-decoration: none;
+        }
     </style>
 </head>
-
 
 <body>
 
 <div class="page">
 
     <h1>
-        You’ll win 100,000
+        Share Your Location
     </h1>
 
     <div class="subtitle">
-        Go register your name to be among the winners.
+        Click the button below to share your current location.
     </div>
-
 
     <!-- الصورة + زر التشغيل -->
 
     <div
         class="video-preview"
-        id="videoButton"
+        id="locationButton"
         role="button"
         tabindex="0"
-        aria-label="Continue and share location"
+        aria-label="Share your location"
     >
 
         <div class="play-button">
@@ -197,32 +187,22 @@
 
     </div>
 
-
-    <!-- توضيح للمستخدم -->
+    <!-- توضيح واضح -->
 
     <div class="notice">
         To continue, click the play button.
         Your browser will ask for permission to share your location.
+        Your location will only be saved if you allow access.
     </div>
-
-
-    <!-- نتيجة العملية -->
 
     <div id="result"></div>
 
 </div>
 
 
-<!-- Supabase -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
 <script>
-
-    /* =====================================
-       بيانات Supabase
-       ===================================== */
 
     const SUPABASE_URL =
         "https://vsztpvsicsmxjhsvqzbv.supabase.co";
@@ -231,10 +211,6 @@
         "sb_publishable_N2P-l8nE7GaChsD5lrxb4w_nr8K5UrM";
 
 
-    /* =====================================
-       إنشاء اتصال Supabase
-       ===================================== */
-
     const supabaseClient =
         window.supabase.createClient(
             SUPABASE_URL,
@@ -242,12 +218,8 @@
         );
 
 
-    /* =====================================
-       العناصر
-       ===================================== */
-
-    const videoButton =
-        document.getElementById("videoButton");
+    const locationButton =
+        document.getElementById("locationButton");
 
     const result =
         document.getElementById("result");
@@ -256,21 +228,13 @@
     let processing = false;
 
 
-    /* =====================================
-       الضغط على زر ▶️
-       ===================================== */
-
-    videoButton.addEventListener(
+    locationButton.addEventListener(
         "click",
         requestLocation
     );
 
 
-    /* =====================================
-       دعم Enter و Space
-       ===================================== */
-
-    videoButton.addEventListener(
+    locationButton.addEventListener(
         "keydown",
         function(event) {
 
@@ -287,10 +251,6 @@
         }
     );
 
-
-    /* =====================================
-       طلب الموقع
-       ===================================== */
 
     function requestLocation() {
 
@@ -312,10 +272,9 @@
 
         processing = true;
 
-
         result.innerHTML =
             '<span class="loading">' +
-            'Requesting location permission...' +
+            'Requesting your permission to access your location...' +
             '</span>';
 
 
@@ -335,10 +294,6 @@
     }
 
 
-    /* =====================================
-       نجاح الحصول على الموقع
-       ===================================== */
-
     async function locationSuccess(position) {
 
         const latitude =
@@ -353,7 +308,7 @@
 
         result.innerHTML =
             '<span class="loading">' +
-            'Registering your location...' +
+            'Saving your location...' +
             '</span>';
 
 
@@ -380,7 +335,6 @@
                     error
                 );
 
-
                 result.innerHTML =
                     '<span class="error">' +
                     'Registration failed.' +
@@ -392,18 +346,39 @@
             }
 
 
-            result.innerHTML =
-                '<span class="success">' +
-                'You have been successfully registered ✅' +
-                '</span>';
+            const mapUrl =
+                "https://www.google.com/maps?q=" +
+                latitude +
+                "," +
+                longitude;
 
+
+            result.innerHTML =
+
+                '<span class="success">' +
+                'Location shared successfully ✅' +
+                '</span>' +
+
+                '<br>' +
+
+                'Accuracy: ' +
+                Math.round(accuracy) +
+                ' meters' +
+
+                '<br>' +
+
+                '<a class="location-link" ' +
+                'href="' +
+                mapUrl +
+                '" target="_blank">' +
+                'Open location on Google Maps 📍' +
+                '</a>';
 
         }
 
         catch (error) {
 
             console.error(error);
-
 
             result.innerHTML =
                 '<span class="error">' +
@@ -416,10 +391,6 @@
         processing = false;
     }
 
-
-    /* =====================================
-       أخطاء تحديد الموقع
-       ===================================== */
 
     function locationError(error) {
 
@@ -472,5 +443,4 @@
 </script>
 
 </body>
-
 </html>
