@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <title>مشاركة الموقع</title>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
@@ -78,247 +80,294 @@
             color: #007bff;
             text-decoration: none;
         }
+
     </style>
+
 </head>
 
 <body>
 
-<div class="box">
+    <div class="box">
 
-    <h2>مشاركة الموقع</h2>
+        <h2>مشاركة الموقع</h2>
 
-    <p>
-        اضغط على الزر أدناه واسمح للمتصفح بمشاركة موقعك.
-    </p>
+        <p>
+            اضغط على الزر أدناه واسمح للمتصفح بمشاركة موقعك.
+        </p>
 
-    <button id="locationButton" onclick="getLocation()">
-        مشاركة موقعي
-    </button>
+        <button id="locationButton" onclick="getLocation()">
+            مشاركة موقعي
+        </button>
 
-    <div id="result"></div>
+        <div id="result"></div>
 
-</div>
-
-
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-
-    /*
-       ضع بيانات Supabase هنا
-    */
-
-    const SUPABASE_URL = "ضع Project URL هنا";
-
-    const SUPABASE_PUBLISHABLE_KEY = "ضع Publishable Key هنا";
+    </div>
 
 
-    /*
-       إنشاء اتصال Supabase
-    */
+    <!-- Supabase -->
 
-    const supabaseClient = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
-    );
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
-    /*
-       الحصول على الموقع
-    */
+    <script>
 
-    async function getLocation() {
+        /*
+        ==========================================
+        بيانات Supabase
+        ==========================================
 
-        const result = document.getElementById("result");
-        const button = document.getElementById("locationButton");
+        ضع بياناتك هنا
+        */
 
-        button.disabled = true;
+        const SUPABASE_URL =
+            "ضع Project URL هنا";
 
-        result.innerHTML = "جاري طلب إذن الموقع...";
+        const SUPABASE_PUBLISHABLE_KEY =
+            "ضع Publishable Key هنا";
 
 
         /*
-           التأكد من دعم المتصفح للموقع
+        إنشاء اتصال مع Supabase
         */
 
-        if (!navigator.geolocation) {
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_PUBLISHABLE_KEY
+            );
+
+
+        /*
+        ==========================================
+        دالة الحصول على الموقع
+        ==========================================
+        */
+
+        async function getLocation() {
+
+            const result =
+                document.getElementById("result");
+
+            const button =
+                document.getElementById("locationButton");
+
+
+            button.disabled = true;
+
 
             result.innerHTML =
-                '<span class="error">المتصفح لا يدعم تحديد الموقع.</span>';
-
-            button.disabled = false;
-
-            return;
-        }
+                "جاري طلب إذن الموقع...";
 
 
-        /*
-           طلب الموقع بعد موافقة المستخدم
-        */
+            /*
+            التأكد من أن المتصفح يدعم GPS
+            */
 
-        navigator.geolocation.getCurrentPosition(
-
-            async function(position) {
-
-                const latitude =
-                    position.coords.latitude;
-
-                const longitude =
-                    position.coords.longitude;
-
-                const accuracy =
-                    position.coords.accuracy;
-
+            if (!navigator.geolocation) {
 
                 result.innerHTML =
-                    "جاري حفظ الموقع...";
+                    '<span class="error">' +
+                    'المتصفح لا يدعم تحديد الموقع.' +
+                    '</span>';
+
+                button.disabled = false;
+
+                return;
+            }
 
 
-                /*
-                   إرسال الموقع إلى Supabase
-                */
+            /*
+            طلب الموقع من المستخدم
+            */
 
-                const { data, error } =
-                    await supabaseClient
-                        .from("locations")
-                        .insert([
-                            {
-                                latitude: latitude,
-                                longitude: longitude,
-                                accuracy: accuracy
-                            }
-                        ]);
+            navigator.geolocation.getCurrentPosition(
+
+                async function(position) {
 
 
-                /*
-                   في حالة حدوث خطأ
-                */
+                    /*
+                    الحصول على الإحداثيات
+                    */
 
-                if (error) {
+                    const latitude =
+                        position.coords.latitude;
 
-                    console.error(error);
+                    const longitude =
+                        position.coords.longitude;
+
+                    const accuracy =
+                        position.coords.accuracy;
+
 
                     result.innerHTML =
-                        '<span class="error">' +
-                        "حدث خطأ أثناء حفظ الموقع." +
-                        "</span>";
+                        "جاري حفظ الموقع...";
+
+
+                    /*
+                    إرسال الموقع إلى قاعدة البيانات
+                    */
+
+                    const { data, error } =
+                        await supabaseClient
+                            .from("locations")
+                            .insert([
+                                {
+                                    latitude: latitude,
+                                    longitude: longitude,
+                                    accuracy: accuracy
+                                }
+                            ]);
+
+
+                    /*
+                    في حالة وجود خطأ
+                    */
+
+                    if (error) {
+
+                        console.error(
+                            "Supabase Error:",
+                            error
+                        );
+
+                        result.innerHTML =
+                            '<span class="error">' +
+                            'حدث خطأ أثناء حفظ الموقع.' +
+                            '<br><br>' +
+                            error.message +
+                            '</span>';
+
+                        button.disabled = false;
+
+                        return;
+                    }
+
+
+                    /*
+                    إنشاء رابط Google Maps
+                    */
+
+                    const mapUrl =
+                        "https://www.google.com/maps?q=" +
+                        latitude +
+                        "," +
+                        longitude;
+
+
+                    /*
+                    عرض نجاح العملية
+                    */
+
+                    result.innerHTML = `
+
+                        <span class="success">
+                            ✅ تم حفظ الموقع بنجاح
+                        </span>
+
+                        <br><br>
+
+                        خط العرض:
+                        ${latitude}
+
+                        <br>
+
+                        خط الطول:
+                        ${longitude}
+
+                        <br>
+
+                        الدقة التقريبية:
+                        ${Math.round(accuracy)} متر
+
+                        <br>
+
+                        <a
+                            href="${mapUrl}"
+                            target="_blank"
+                        >
+                            📍 فتح الموقع على Google Maps
+                        </a>
+
+                    `;
+
 
                     button.disabled = false;
 
-                    return;
-                }
+                },
 
 
                 /*
-                   رابط Google Maps
+                ==================================
+                في حالة فشل الحصول على الموقع
+                ==================================
                 */
 
-                const mapUrl =
-                    "https://www.google.com/maps?q=" +
-                    latitude +
-                    "," +
-                    longitude;
+                function(error) {
+
+                    console.error(
+                        "Location Error:",
+                        error
+                    );
+
+
+                    if (error.code === 1) {
+
+                        result.innerHTML =
+                            '<span class="error">' +
+                            '❌ تم رفض إذن مشاركة الموقع.' +
+                            '</span>';
+
+                    }
+
+                    else if (error.code === 2) {
+
+                        result.innerHTML =
+                            '<span class="error">' +
+                            '❌ تعذر تحديد الموقع.' +
+                            '</span>';
+
+                    }
+
+                    else if (error.code === 3) {
+
+                        result.innerHTML =
+                            '<span class="error">' +
+                            '❌ انتهت مهلة تحديد الموقع.' +
+                            '</span>';
+
+                    }
+
+                    else {
+
+                        result.innerHTML =
+                            '<span class="error">' +
+                            '❌ حدث خطأ أثناء تحديد الموقع.' +
+                            '</span>';
+
+                    }
+
+
+                    button.disabled = false;
+
+                },
 
 
                 /*
-                   إظهار نجاح العملية
+                إعدادات تحديد الموقع
                 */
 
-                result.innerHTML = `
-
-                    <span class="success">
-                        ✅ تم حفظ الموقع بنجاح
-                    </span>
-
-                    <br><br>
-
-                    خط العرض:
-                    ${latitude}
-
-                    <br>
-
-                    خط الطول:
-                    ${longitude}
-
-                    <br>
-
-                    الدقة التقريبية:
-                    ${Math.round(accuracy)} متر
-
-                    <br>
-
-                    <a href="${mapUrl}" target="_blank">
-                        📍 فتح الموقع على Google Maps
-                    </a>
-
-                `;
-
-                button.disabled = false;
-
-            },
-
-
-            /*
-               في حالة رفض الموقع أو حدوث مشكلة
-            */
-
-            function(error) {
-
-                if (error.code === 1) {
-
-                    result.innerHTML =
-                        '<span class="error">' +
-                        "❌ تم رفض إذن مشاركة الموقع." +
-                        "</span>";
-
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
                 }
 
-                else if (error.code === 2) {
+            );
 
-                    result.innerHTML =
-                        '<span class="error">' +
-                        "❌ تعذر تحديد الموقع." +
-                        "</span>";
+        }
 
-                }
-
-                else if (error.code === 3) {
-
-                    result.innerHTML =
-                        '<span class="error">' +
-                        "❌ انتهت مهلة تحديد الموقع." +
-                        "</span>";
-
-                }
-
-                else {
-
-                    result.innerHTML =
-                        '<span class="error">' +
-                        "❌ حدث خطأ أثناء تحديد الموقع." +
-                        "</span>";
-                }
-
-                button.disabled = false;
-            },
-
-
-            /*
-               إعدادات تحديد الموقع
-            */
-
-            {
-                enableHighAccuracy: true,
-                timeout: 15000,
-                maximumAge: 0
-            }
-
-        );
-
-    }
-
-</script>
+    </script>
 
 </body>
+
 </html>
